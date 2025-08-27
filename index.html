@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chanchitos por siempre</title>
+  <style>
+    html, body { height: 100%; margin: 0; padding: 0; }
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: pink;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      overflow: hidden;
+      position: relative;
+    }
+    h1 {
+      font-size: clamp(2rem, 6vw, 4rem);
+      color: white;
+      text-shadow: 2px 2px 8px #ff69b4;
+      z-index: 2;
+      text-align: center;
+      padding: 0 1rem;
+    }
+    .heart {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: red;
+      transform: rotate(45deg);
+      animation: float 8s infinite;
+    }
+    .heart:before,
+    .heart:after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: red;
+      border-radius: 50%;
+    }
+    .heart:before { top: -10px; left: 0; }
+    .heart:after { left: -10px; top: 0; }
+
+    @keyframes float {
+      0% { transform: translateY(100vh) rotate(45deg); opacity: 0; }
+      30% { opacity: 1; }
+      100% { transform: translateY(-10vh) rotate(45deg); opacity: 0; }
+    }
+
+    /* Overlay para móviles */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(255, 105, 180, 0.92);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 5;
+      text-align: center;
+      padding: 24px;
+    }
+    .overlay.show { display: flex; }
+    .overlay h2 {
+      color: #fff;
+      margin: 0;
+      font-size: 1.5rem;
+      text-shadow: 0 2px 8px rgba(0,0,0,.3);
+    }
+    .overlay button {
+      padding: 12px 20px;
+      background: #fff;
+      color: #ff2d87;
+      border: none;
+      border-radius: 999px;
+      font-size: 1rem;
+      box-shadow: 0 3px 10px rgba(0,0,0,.25);
+      cursor: pointer;
+    }
+
+    /* Iframe "visible" para iOS (1x1 y opaco) */
+    #musicFrame {
+      width: 1px; height: 1px; opacity: 0.01; border: 0;
+      position: absolute; left: 0; top: 0; z-index: 1;
+    }
+
+    /* Botón secundario por si falla */
+    #ytLink {
+      position: fixed;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255,255,255,0.9);
+      color: #ff2d87;
+      border: 0;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: .9rem;
+      text-decoration: none;
+      z-index: 3;
+    }
+  </style>
+</head>
+<body>
+  <h1>💖 Chanchitos por siempre 💖</h1>
+
+  <!-- Intento autoplay en desktop -->
+  <iframe id="desktopAuto" width="0" height="0"
+    src="https://www.youtube.com/embed/vBy7FaapGRo?autoplay=1&loop=1&playlist=vBy7FaapGRo&playsinline=1"
+    frameborder="0" allow="autoplay; encrypted-media">
+  </iframe>
+
+  <!-- Iframe para móviles, se setea en el click -->
+  <iframe id="musicFrame" src="" allow="autoplay; encrypted-media"></iframe>
+
+  <!-- Overlay móvil -->
+  <div id="overlay" class="overlay">
+    <h2>💞 Tocá para reproducir la música</h2>
+    <button id="playBtn">▶️ Reproducir “Best Part”</button>
+  </div>
+
+  <!-- Enlace de respaldo por si todo falla en el navegador -->
+  <a id="ytLink" href="https://youtu.be/vBy7FaapGRo" target="_blank" rel="noopener">Abrir en YouTube</a>
+
+  <script>
+    // Corazones flotando
+    function createHeart() {
+      const heart = document.createElement('div');
+      heart.className = 'heart';
+      heart.style.left = Math.random() * 100 + 'vw';
+      heart.style.animationDuration = (5 + Math.random() * 5) + 's';
+      document.body.appendChild(heart);
+      setTimeout(() => { heart.remove(); }, 10000);
+    }
+    setInterval(createHeart, 300);
+
+    // Detección simple de móvil
+    const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const overlay = document.getElementById('overlay');
+    const playBtn = document.getElementById('playBtn');
+    const musicFrame = document.getElementById('musicFrame');
+
+    if (isMobile) {
+      // Mostrar overlay para pedir interacción
+      overlay.classList.add('show');
+      // Detener intento de autoplay en móvil
+      const desktopAuto = document.getElementById('desktopAuto');
+      if (desktopAuto) { desktopAuto.remove(); }
+    }
+
+    playBtn && playBtn.addEventListener('click', () => {
+      // Crear la reproducción con interacción del usuario
+      musicFrame.src = "https://www.youtube.com/embed/vBy7FaapGRo?autoplay=1&loop=1&playlist=vBy7FaapGRo&playsinline=1";
+      overlay.classList.remove('show');
+    }, { once: true });
+  </script>
+</body>
+</html>
